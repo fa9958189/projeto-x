@@ -2,7 +2,7 @@ import './styles/main.css';
 import { CameraPreview } from './camera/CameraPreview';
 import { Galaxy } from './galaxy/Galaxy';
 import type { HandTracker, HandTrackerStatus } from './hand/HandTracker';
-import { InteractionState } from './interaction/InteractionState';
+import { InteractionState, type InteractionSnapshot } from './interaction/InteractionState';
 
 class ProjetoXApp {
   private readonly interaction = new InteractionState();
@@ -16,8 +16,12 @@ class ProjetoXApp {
   private readonly statusCopy: HTMLElement;
   private readonly gestureHint: HTMLElement;
   private readonly gestureHintCopy: HTMLElement;
+  private readonly handRoles: HTMLElement;
+  private readonly rightRole: HTMLElement;
+  private readonly leftRole: HTMLElement;
+  private readonly rightRoleState: HTMLElement;
+  private readonly leftRoleState: HTMLElement;
   private trackingReady = false;
-  private handDetected = false;
   private lastUiUpdate = -Infinity;
 
   public constructor() {
@@ -29,13 +33,18 @@ class ProjetoXApp {
     this.statusCopy = this.getElement<HTMLElement>('status-copy');
     this.gestureHint = this.getElement<HTMLElement>('gesture-hint');
     this.gestureHintCopy = this.getElement<HTMLElement>('gesture-hint-copy');
+    this.handRoles = this.getElement<HTMLElement>('hand-roles');
+    this.rightRole = this.getElement<HTMLElement>('right-role');
+    this.leftRole = this.getElement<HTMLElement>('left-role');
+    this.rightRoleState = this.getElement<HTMLElement>('right-role-state');
+    this.leftRoleState = this.getElement<HTMLElement>('left-role-state');
 
     this.galaxy = new Galaxy(galaxyRoot);
     this.activateButton.addEventListener('click', () => void this.activate());
     this.galaxy.start((deltaSeconds, timestampMs) => {
       this.tracker?.update(timestampMs);
       const state = this.interaction.update(deltaSeconds, timestampMs);
-      this.updateInterface(state.handDetected, state.openness, timestampMs);
+      this.updateInterface(state, timestampMs);
       return state;
     });
 
@@ -55,8 +64,7 @@ class ProjetoXApp {
           onStatusChange: (status) => this.handleTrackerStatus(status),
           onFrame: (frame) => {
             this.interaction.ingest(frame, performance.now());
-            this.handDetected = frame.detected;
-            this.cameraPreview.update(frame.detected, frame.openness, frame.landmarks);
+            this.cameraPreview.update(frame);
           },
         });
       }
@@ -65,6 +73,7 @@ class ProjetoXApp {
       this.trackingReady = true;
       this.intro.classList.add('is-dismissed');
       this.gestureHint.classList.add('is-visible');
+      this.handRoles.classList.add('is-visible');
     } catch {
       if (!this.tracker) this.handleTrackerStatus('error');
       this.activateButton.disabled = false;
@@ -105,25 +114,45 @@ class ProjetoXApp {
     this.activateButton.querySelector('span')!.textContent = 'TENTAR NOVAMENTE';
   }
 
-  private updateInterface(detected: boolean, openness: number, timestampMs: number): void {
+  private updateInterface(interaction: InteractionSnapshot, timestampMs: number): void {
     if (!this.trackingReady || timestampMs - this.lastUiUpdate < 100) return;
     this.lastUiUpdate = timestampMs;
 
-    if (detected) {
-      this.statusCopy.textContent = 'ACTIVE';
+    const { right, left, handCount } = interaction;
+    this.rightRole.dataset.active = String(right.detected);
+    this.leftRole.dataset.active = String(left.detected);
+    this.rightRoleState.textContent = right.detected
+      ? `FIELD ${Math.round(right.openness * 100).toString().padStart(2, '0')}%`
+      : 'WAITING';
+    this.leftRoleState.textContent = left.detected
+      ? `ZOOM ${Math.round(interaction.zoom * 100).toString().padStart(2, '0')}%`
+      : 'WAITING';
+
+    if (handCount > 0) {
+      this.statusCopy.textContent = handCount === 2
+        ? 'DUAL ACTIVE'
+        : right.detected
+          ? 'RIGHT ACTIVE'
+          : 'LEFT ACTIVE';
       this.trackingStatus.dataset.state = 'ready';
-      this.gestureHintCopy.textContent = openness < 0.35
-        ? 'Abra a mão para expandir'
-        : openness > 0.78
-          ? 'Feche a mão para comprimir'
-          : 'A galáxia responde aos seus dedos';
       this.gestureHint.classList.add('has-hand');
+
+      if (right.detected && left.detected) {
+        this.gestureHintCopy.textContent = interaction.zoom > 0.55
+          ? 'Zoom cósmico ativo · mova a mão esquerda para explorar'
+          : 'Faça pinça com a esquerda para aproximar os mundos';
+      } else if (right.detected) {
+        this.gestureHintCopy.textContent = right.openness < 0.35
+          ? 'Abra a mão direita para expandir'
+          : 'Feche a mão direita · levante a esquerda para revelar mundos';
+      } else {
+        this.gestureHintCopy.textContent = 'Mundos revelados · levante a mão direita para controlar a galáxia';
+      }
     } else {
       this.statusCopy.textContent = 'SEARCHING';
       this.trackingStatus.dataset.state = 'searching';
-      this.gestureHintCopy.textContent = 'Mostre uma mão para a câmera';
+      this.gestureHintCopy.textContent = 'Mão direita: gravidade · mão esquerda: exploração';
       this.gestureHint.classList.remove('has-hand');
-      if (this.handDetected) this.handDetected = false;
     }
   }
 

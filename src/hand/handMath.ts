@@ -74,3 +74,14 @@ export function estimatePalmScale(landmarks: readonly NormalizedLandmark[]): num
   const palmWidth = distance3D(indexMcp, pinkyMcp);
   return Math.max((palmLength + palmWidth) * 0.5, 0.001);
 }
+
+export function getPinchAmount(landmarks: readonly NormalizedLandmark[], openness: number): number {
+  const thumbTip = landmarks[4];
+  const indexTip = landmarks[8];
+  if (!thumbTip || !indexTip) return 0;
+
+  const normalizedDistance = distance3D(thumbTip, indexTip) / estimatePalmScale(landmarks);
+  const proximity = 1 - smoothstep(0.24, 0.92, normalizedDistance);
+  const intentionalPose = smoothstep(0.2, 0.58, openness);
+  return clamp(proximity * intentionalPose);
+}

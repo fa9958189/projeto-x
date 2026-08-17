@@ -4,7 +4,7 @@ Experimento de visão computacional e arte generativa que permite controlar uma 
 
 ## Sobre o projeto
 
-O Projeto X transforma a abertura da mão em uma força gravitacional contínua. Uma mão aberta expande a galáxia; ao fechar os dedos, cada estrela é atraída individualmente para o núcleo e entra em um movimento de vórtice. Toda a experiência funciona no navegador, sem backend, banco de dados ou envio das imagens da câmera.
+O Projeto X transforma as mãos em dois instrumentos complementares. A mão direita controla a força gravitacional da galáxia: aberta expande o campo estelar e fechada atrai cada estrela para o núcleo. A mão esquerda revela um sistema planetário e a distância entre o polegar e o indicador controla um zoom cinematográfico. Toda a experiência funciona no navegador, sem backend, banco de dados ou envio das imagens da câmera.
 
 ## Tecnologias
 
@@ -32,9 +32,9 @@ Three.js
 Galaxy Particle System
 ```
 
-O MediaPipe identifica 21 landmarks da mão. A função `getHandOpenness(landmarks)` combina três sinais para cada dedo: comprimento direto em relação à cadeia das articulações, alinhamento entre as falanges e distância da ponta do dedo até a palma. Todas as distâncias são normalizadas pelo comprimento e pela largura da própria palma, reduzindo a influência da distância até a webcam.
+O MediaPipe identifica 21 landmarks de até duas mãos e fornece a lateralidade de cada detecção. A função `getHandOpenness(landmarks)` combina três sinais para cada dedo: comprimento direto em relação à cadeia das articulações, alinhamento entre as falanges e distância da ponta do dedo até a palma. Todas as distâncias são normalizadas pelo comprimento e pela largura da própria palma, reduzindo a influência da distância até a webcam.
 
-O resultado é um valor contínuo entre `0` e `1`, filtrado com suavização exponencial dependente do tempo. Quando a mão desaparece, o estado de interação retorna lentamente a uma abertura neutra.
+O resultado é um valor contínuo entre `0` e `1`, filtrado com suavização exponencial dependente do tempo. A pinça esquerda também é normalizada pelo tamanho da palma. Quando uma mão desaparece, somente o canal controlado por ela retorna suavemente ao estado neutro.
 
 ## Arquitetura
 
@@ -46,6 +46,7 @@ src/
 │   └── constants.ts           # Modelo, performance e configuração de debug
 ├── galaxy/
 │   ├── Galaxy.ts              # Cena, render loop e deformação GPU
+│   ├── PlanetarySystem.ts     # Planetas, atmosferas e órbitas procedurais
 │   └── galaxyGenerator.ts     # Geração procedural dos buffers imutáveis
 ├── hand/
 │   ├── HandTracker.ts         # Webcam e inferência MediaPipe
@@ -83,10 +84,11 @@ npm run preview
 
 ## Controles
 
-- **Abrir a mão:** expande a galáxia.
-- **Fechar a mão:** comprime as estrelas em direção ao núcleo.
-- **Mover para os lados:** altera sutilmente a rotação horizontal.
-- **Mover para cima ou para baixo:** inclina a galáxia suavemente.
+- **Abrir/fechar a mão direita:** expande ou comprime a galáxia.
+- **Mover a mão direita:** altera sutilmente a rotação e a inclinação.
+- **Levantar a mão esquerda:** revela os planetas e suas órbitas.
+- **Fazer pinça com a mão esquerda:** aproxima a câmera progressivamente.
+- **Mover a mão esquerda durante a pinça:** desloca o foco da exploração.
 
 Para visualizar os landmarks, altere `DEBUG_HAND_TRACKING` para `true` em `src/config/constants.ts`.
 
@@ -95,6 +97,7 @@ Para visualizar os landmarks, altere `DEBUG_HAND_TRACKING` para `true` em `src/c
 - Calibração opcional por usuário e condições de iluminação.
 - MediaPipe em Web Worker com `OffscreenCanvas` quando o suporte for adequado.
 - Adaptação dinâmica de qualidade baseada no tempo de frame.
+- Seleção e aproximação cinematográfica de um planeta específico.
 - Materiais e pós-processamento WebGL ainda mais sofisticados.
 
 ## Screenshots

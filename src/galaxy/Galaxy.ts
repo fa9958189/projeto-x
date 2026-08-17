@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GALAXY } from '../config/constants';
 import type { InteractionSnapshot } from '../interaction/InteractionState';
 import { generateDistantStars, generateGalaxy, getAdaptiveParticleCount } from './galaxyGenerator';
+import { PlanetarySystem } from './PlanetarySystem';
 
 const vertexShader = /* glsl */ `
   uniform float uTime;
@@ -93,11 +94,16 @@ export class Galaxy {
   private readonly distantStars: THREE.Points<THREE.BufferGeometry, THREE.PointsMaterial>;
   private readonly coreSprites: THREE.Sprite[] = [];
   private readonly glowTexture: THREE.CanvasTexture;
+  private readonly planetarySystem = new PlanetarySystem();
+  private readonly lookTarget = new THREE.Vector3();
   private frameId = 0;
   private previousTime = performance.now();
   private openness = 0.72;
   private rotationX = -0.08;
   private rotationY = 0;
+  private cameraZoom = 0;
+  private cameraFocusX = 0.5;
+  private cameraFocusY = 0.5;
   private elapsedTime = 0;
   private updateCallback: ((deltaSeconds: number, timestampMs: number) => InteractionSnapshot) | null = null;
 
@@ -148,7 +154,13 @@ export class Galaxy {
     this.particles = new THREE.Points(geometry, material);
     this.particles.frustumCulled = false;
     this.galaxyGroup.add(this.particles);
+    this.galaxyGroup.add(this.planetarySystem.group);
     this.scene.add(this.galaxyGroup);
+
+    const ambientLight = new THREE.AmbientLight('#79b8d4', 0.5);
+    const coreLight = new THREE.PointLight('#a8ecff', 32, 34, 1.7);
+    coreLight.position.set(0, 1.2, 0);
+    this.scene.add(ambientLight, coreLight);
 
     const distantGeometry = generateDistantStars(GALAXY.distantStars);
     const distantMaterial = new THREE.PointsMaterial({
@@ -185,6 +197,7 @@ export class Galaxy {
     this.particles.material.dispose();
     this.distantStars.geometry.dispose();
     this.distantStars.material.dispose();
+    this.planetarySystem.dispose();
     for (const sprite of this.coreSprites) sprite.material.dispose();
     this.glowTexture.dispose();
     this.renderer.dispose();
@@ -205,6 +218,9 @@ export class Galaxy {
     this.galaxyGroup.rotation.y += deltaSeconds * (0.018 + (1 - this.openness) * 0.15);
     this.distantStars.rotation.y = elapsed * 0.0025;
     this.distantStars.rotation.x = Math.sin(elapsed * 0.035) * 0.018;
+    if (interaction) {
+      this.planetarySystem.update(elapsed, interaction.planetVisibility, this.cameraZoom, deltaSeconds);
+    }
 
     const compression = 1 - this.openness;
     for (let index = 0; index < this.coreSprites.length; index += 1) {
@@ -220,15 +236,26 @@ export class Galaxy {
   };
 
   private applyInteraction(interaction: InteractionSnapshot, deltaSeconds: number): void {
-    this.openness = damp(this.openness, interaction.openness, 11, deltaSeconds);
-    const targetRotationY = (interaction.handX - 0.5) * 0.32;
-    const targetRotationX = -0.08 + (interaction.handY - 0.5) * 0.2;
+    this.openness = damp(this.openness, interaction.right.openness, 11, deltaSeconds);
+    const targetRotationY = (interaction.right.x - 0.5) * 0.32;
+    const targetRotationX = -0.08 + (interaction.right.y - 0.5) * 0.2;
     this.rotationY = damp(this.rotationY, targetRotationY, 3.8, deltaSeconds);
     this.rotationX = damp(this.rotationX, targetRotationX, 3.8, deltaSeconds);
     this.galaxyGroup.rotation.x = this.rotationX;
     this.galaxyGroup.rotation.z = this.rotationY * 0.16;
-    this.camera.position.x = damp(this.camera.position.x, this.rotationY * 2.2, 2.2, deltaSeconds);
-    this.camera.lookAt(0, 0, 0);
+
+    this.cameraZoom = damp(this.cameraZoom, interaction.zoom, 6.8, deltaSeconds);
+    this.cameraFocusX = damp(this.cameraFocusX, interaction.left.x, 4.2, deltaSeconds);
+    this.cameraFocusY = damp(this.cameraFocusY, interaction.left.y, 4.2, deltaSeconds);
+    const focusStrength = this.cameraZoom * interaction.planetVisibility;
+    const focusX = (this.cameraFocusX - 0.5) * 5.2 * focusStrength;
+    const focusY = (0.5 - this.cameraFocusY) * 2.5 * focusStrength;
+
+    this.camera.position.x = damp(this.camera.position.x, focusX * 0.42, 4.6, deltaSeconds);
+    this.camera.position.y = damp(this.camera.position.y, 13.5 - this.cameraZoom * 3.7, 4.6, deltaSeconds);
+    this.camera.position.z = damp(this.camera.position.z, 27.5 - this.cameraZoom * 11.2, 4.6, deltaSeconds);
+    this.lookTarget.set(focusX, focusY, 0);
+    this.camera.lookAt(this.lookTarget);
   }
 
   private createCore(): void {

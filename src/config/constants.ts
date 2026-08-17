@@ -9,6 +9,9 @@ export const MEDIAPIPE_WASM_URL =
 export const TRACKING_MAX_FPS = 30;
 export const HAND_LOST_TIMEOUT_MS = 180;
 
+// The model receives the unmirrored camera frame while the preview is mirrored.
+export const SWAP_MEDIAPIPE_HANDEDNESS = true;
+
 export const NEUTRAL_INTERACTION = {
   openness: 0.72,
   x: 0.5,
@@ -27,4 +30,11 @@ export const GALAXY = {
   distantStars: 1_700,
   minScale: 0.15,
   maxScale: 1.15,
+} as const;
+
+export const PLANETARY_SYSTEM = {
+  planetCount: 5,
+  revealHalfLife: 0.24,
+  zoomHalfLife: 0.13,
+  maximumZoom: 0.86,
 } as const;

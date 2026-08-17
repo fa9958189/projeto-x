@@ -45,6 +45,7 @@
         <p class="intro-kicker">VISÃO COMPUTACIONAL × ARTE GENERATIVA</p>
         <h1 id="intro-title">PROJETO <em>X</em></h1>
         <p class="intro-lead">Controle o universo com suas mãos.</p>
+        <p class="intro-controls">DIREITA · GRAVIDADE&nbsp;&nbsp;&nbsp; ESQUERDA · EXPLORAÇÃO</p>
         <button class="activate-button" id="activate-camera" type="button">
           <span>ATIVAR CÂMERA</span>
           <span class="button-icon" aria-hidden="true">↗</span>
@@ -66,9 +67,27 @@
         </div>
         <div class="camera-footer">
           <span id="hand-state">NO HAND</span>
-          <span class="openness-readout" id="openness-readout">OPENNESS — --%</span>
+          <span class="hand-readout" id="right-readout">R --%</span>
+          <span class="hand-readout hand-readout--left" id="left-readout">L PINCH --%</span>
         </div>
       </aside>
+
+      <div class="hand-roles" id="hand-roles" aria-label="Funções das mãos">
+        <div class="hand-role" id="right-role" data-active="false">
+          <span class="hand-key">R</span>
+          <div>
+            <span>GRAVITY</span>
+            <strong id="right-role-state">WAITING</strong>
+          </div>
+        </div>
+        <div class="hand-role hand-role--left" id="left-role" data-active="false">
+          <span class="hand-key">L</span>
+          <div>
+            <span>WORLDS / LENS</span>
+            <strong id="left-role-state">WAITING</strong>
+          </div>
+        </div>
+      </div>
 
       <div class="gesture-hint" id="gesture-hint" aria-live="polite">
         <span class="gesture-icon" aria-hidden="true"></span>

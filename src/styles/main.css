@@ -102,7 +102,9 @@ button {
 .hud--side,
 .privacy-note,
 .intro-kicker,
-.gesture-hint {
+.gesture-hint,
+.intro-controls,
+.hand-roles {
   font-family: 'DM Mono', monospace;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -226,11 +228,18 @@ button {
 }
 
 .intro-lead {
-  margin: 24px 0 33px;
+  margin: 24px 0 11px;
   color: rgba(225, 242, 250, 0.68);
   font-size: clamp(13px, 1.35vw, 17px);
   font-weight: 300;
   letter-spacing: 0.045em;
+}
+
+.intro-controls {
+  margin: 0 0 25px;
+  color: rgba(155, 221, 246, 0.42);
+  font-size: 7px;
+  letter-spacing: 0.14em;
 }
 
 .activate-button {
@@ -461,6 +470,7 @@ button {
 }
 
 .camera-footer {
+  gap: 7px;
   color: rgba(214, 237, 247, 0.34);
   border-top: 1px solid rgba(156, 222, 255, 0.11);
 }
@@ -469,8 +479,78 @@ button {
   color: var(--cyan);
 }
 
-.openness-readout {
+.hand-readout {
   color: rgba(220, 245, 255, 0.6);
+  white-space: nowrap;
+}
+
+.hand-readout--left {
+  color: rgba(198, 167, 255, 0.66);
+}
+
+.hand-roles {
+  position: absolute;
+  z-index: 7;
+  right: 34px;
+  bottom: 34px;
+  display: grid;
+  gap: 7px;
+  color: rgba(207, 236, 248, 0.32);
+  font-size: 7px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.7s ease 0.45s, transform 0.7s ease 0.45s;
+  pointer-events: none;
+}
+
+.hand-roles.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hand-role {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  min-width: 152px;
+  padding: 7px 9px;
+  border: 1px solid rgba(120, 231, 255, 0.09);
+  background: rgba(3, 8, 18, 0.32);
+  backdrop-filter: blur(8px);
+  transition: color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.hand-role[data-active='true'] {
+  color: rgba(133, 236, 255, 0.78);
+  border-color: rgba(120, 231, 255, 0.3);
+  box-shadow: inset 0 0 18px rgba(54, 188, 255, 0.035);
+}
+
+.hand-role--left[data-active='true'] {
+  color: rgba(204, 170, 255, 0.82);
+  border-color: rgba(177, 132, 255, 0.32);
+  box-shadow: inset 0 0 18px rgba(153, 87, 255, 0.04);
+}
+
+.hand-key {
+  display: grid;
+  width: 17px;
+  height: 17px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  place-items: center;
+}
+
+.hand-role div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.hand-role strong {
+  color: currentColor;
+  font-size: inherit;
+  font-weight: 400;
 }
 
 .gesture-hint {
@@ -582,6 +662,10 @@ button {
   .gesture-hint.is-visible {
     transform: translateY(0);
   }
+
+  .hand-roles {
+    display: none;
+  }
 }
 
 @media (max-width: 430px) {
@@ -602,8 +686,12 @@ button {
     display: none;
   }
 
-  .openness-readout {
+  .hand-readout {
     margin-left: auto;
+  }
+
+  .hand-readout--left {
+    display: none;
   }
 }
 

@@ -1,5 +1,6 @@
 import type { NormalizedLandmark } from '@mediapipe/tasks-vision';
 import { DEBUG_HAND_TRACKING } from '../config/constants';
+import type { HandTrackingFrame, TrackedHand } from '../hand/HandTracker';
 
 const HAND_CONNECTIONS = [
   [0, 1], [1, 2], [2, 3], [3, 4],
@@ -17,7 +18,8 @@ export class CameraPreview {
   private readonly emptyState: HTMLElement;
   private readonly cameraState: HTMLElement;
   private readonly handState: HTMLElement;
-  private readonly opennessReadout: HTMLElement;
+  private readonly rightReadout: HTMLElement;
+  private readonly leftReadout: HTMLElement;
 
   public constructor() {
     this.root = this.getElement<HTMLElement>('camera-preview');
@@ -27,7 +29,8 @@ export class CameraPreview {
     this.emptyState = this.getElement<HTMLElement>('camera-empty');
     this.cameraState = this.getElement<HTMLElement>('camera-state');
     this.handState = this.getElement<HTMLElement>('hand-state');
-    this.opennessReadout = this.getElement<HTMLElement>('openness-readout');
+    this.rightReadout = this.getElement<HTMLElement>('right-readout');
+    this.leftReadout = this.getElement<HTMLElement>('left-readout');
     this.canvas.hidden = !DEBUG_HAND_TRACKING;
   }
 
@@ -41,19 +44,27 @@ export class CameraPreview {
     this.cameraState.textContent = active ? 'LIVE' : 'OFFLINE';
   }
 
-  public update(detected: boolean, openness: number, landmarks: readonly NormalizedLandmark[] | null): void {
-    this.handState.textContent = detected ? 'HAND LOCKED' : 'SEARCHING';
-    this.handState.classList.toggle('is-detected', detected);
-    this.opennessReadout.textContent = detected
-      ? `OPENNESS — ${Math.round(openness * 100).toString().padStart(2, '0')}%`
-      : 'OPENNESS — --%';
+  public update(frame: HandTrackingFrame): void {
+    const detectedCount = frame.hands.length;
+    this.handState.textContent = detectedCount === 2
+      ? 'DUAL LOCK'
+      : detectedCount === 1
+        ? `${frame.right ? 'RIGHT' : 'LEFT'} LOCK`
+        : 'SEARCHING';
+    this.handState.classList.toggle('is-detected', detectedCount > 0);
+    this.rightReadout.textContent = frame.right
+      ? `R ${Math.round(frame.right.openness * 100).toString().padStart(2, '0')}%`
+      : 'R --%';
+    this.leftReadout.textContent = frame.left
+      ? `L PINCH ${Math.round(frame.left.pinch * 100).toString().padStart(2, '0')}%`
+      : 'L PINCH --%';
 
     if (!DEBUG_HAND_TRACKING) return;
-    if (detected && landmarks) this.drawLandmarks(landmarks);
+    if (detectedCount > 0) this.drawHands(frame.hands);
     else this.clearLandmarks();
   }
 
-  private drawLandmarks(landmarks: readonly NormalizedLandmark[]): void {
+  private drawHands(hands: readonly TrackedHand[]): void {
     if (!this.context || this.video.videoWidth === 0) return;
 
     if (this.canvas.width !== this.video.videoWidth || this.canvas.height !== this.video.videoHeight) {
@@ -63,8 +74,21 @@ export class CameraPreview {
 
     const { width, height } = this.canvas;
     this.context.clearRect(0, 0, width, height);
-    this.context.strokeStyle = 'rgba(105, 242, 255, 0.75)';
     this.context.lineWidth = Math.max(1.5, width / 500);
+
+    for (const hand of hands) {
+      this.drawLandmarks(
+        hand.landmarks,
+        hand.side === 'right' ? 'rgba(105, 242, 255, 0.78)' : 'rgba(184, 139, 255, 0.78)',
+      );
+    }
+  }
+
+  private drawLandmarks(landmarks: readonly NormalizedLandmark[], color: string): void {
+    if (!this.context) return;
+    const { width, height } = this.canvas;
+    this.context.strokeStyle = color;
+    this.context.fillStyle = color;
     this.context.beginPath();
 
     for (const [startIndex, endIndex] of HAND_CONNECTIONS) {
@@ -76,7 +100,6 @@ export class CameraPreview {
     }
     this.context.stroke();
 
-    this.context.fillStyle = '#d8fdff';
     for (const landmark of landmarks) {
       this.context.beginPath();
       this.context.arc(landmark.x * width, landmark.y * height, Math.max(2, width / 250), 0, Math.PI * 2);

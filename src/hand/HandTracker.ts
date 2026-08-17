@@ -6,9 +6,10 @@ import {
 import {
   HAND_MODEL_URL,
   MEDIAPIPE_WASM_URL,
+  SWAP_MEDIAPIPE_HANDEDNESS,
   TRACKING_MAX_FPS,
 } from '../config/constants';
-import { averagePoint, clamp } from './handMath';
+import { averagePoint, clamp, getPinchAmount } from './handMath';
 import { analyzeHandOpenness } from './handOpenness';
 
 export type HandTrackerStatus =
@@ -20,13 +21,23 @@ export type HandTrackerStatus =
   | 'camera-unavailable'
   | 'error';
 
-export interface HandTrackingFrame {
-  detected: boolean;
+export type HandSide = 'left' | 'right';
+
+export interface TrackedHand {
+  side: HandSide;
+  confidence: number;
   openness: number;
+  pinch: number;
   handX: number;
   handY: number;
   handZ: number;
-  landmarks: readonly NormalizedLandmark[] | null;
+  landmarks: readonly NormalizedLandmark[];
+}
+
+export interface HandTrackingFrame {
+  hands: readonly TrackedHand[];
+  left: TrackedHand | null;
+  right: TrackedHand | null;
 }
 
 interface HandTrackerOptions {
@@ -36,13 +47,20 @@ interface HandTrackerOptions {
 }
 
 const NO_HAND_FRAME: HandTrackingFrame = {
-  detected: false,
-  openness: 0,
-  handX: 0.5,
-  handY: 0.5,
-  handZ: 0,
-  landmarks: null,
+  hands: [],
+  left: null,
+  right: null,
 };
+
+function normalizeHandedness(label: string, palmX: number): HandSide {
+  const normalizedLabel = label.toLowerCase();
+  if (normalizedLabel === 'left' || normalizedLabel === 'right') {
+    if (!SWAP_MEDIAPIPE_HANDEDNESS) return normalizedLabel;
+    return normalizedLabel === 'left' ? 'right' : 'left';
+  }
+
+  return palmX < 0.5 ? 'right' : 'left';
+}
 
 export class HandTracker {
   private readonly video: HTMLVideoElement;
@@ -71,7 +89,7 @@ export class HandTracker {
           modelAssetPath: HAND_MODEL_URL,
         },
         runningMode: 'VIDEO',
-        numHands: 1,
+        numHands: 2,
         minHandDetectionConfidence: 0.55,
         minHandPresenceConfidence: 0.52,
         minTrackingConfidence: 0.52,
@@ -135,23 +153,41 @@ export class HandTracker {
     this.previousVideoTime = this.video.currentTime;
 
     const result = this.landmarker.detectForVideo(this.video, timestampMs);
-    const landmarks = result.landmarks[0];
-    if (!landmarks) {
+    if (result.landmarks.length === 0) {
       this.onFrame(NO_HAND_FRAME);
       return;
     }
 
-    const analysis = analyzeHandOpenness(landmarks);
-    const palmCenter = averagePoint(landmarks, [0, 5, 9, 13, 17]);
+    const hands: TrackedHand[] = [];
+    for (let index = 0; index < result.landmarks.length; index += 1) {
+      const landmarks = result.landmarks[index];
+      if (!landmarks) continue;
 
-    this.onFrame({
-      detected: true,
-      openness: analysis.value,
-      handX: clamp(1 - palmCenter.x),
-      handY: clamp(palmCenter.y),
-      handZ: clamp((analysis.palmScale - 0.07) / 0.2),
-      landmarks,
-    });
+      const analysis = analyzeHandOpenness(landmarks);
+      const palmCenter = averagePoint(landmarks, [0, 5, 9, 13, 17]);
+      const category = result.handedness[index]?.[0];
+      const side = normalizeHandedness(category?.categoryName ?? '', palmCenter.x);
+      const trackedHand: TrackedHand = {
+        side,
+        confidence: category?.score ?? 0.5,
+        openness: analysis.value,
+        pinch: getPinchAmount(landmarks, analysis.value),
+        handX: clamp(1 - palmCenter.x),
+        handY: clamp(palmCenter.y),
+        handZ: clamp((analysis.palmScale - 0.07) / 0.2),
+        landmarks,
+      };
+
+      const duplicateIndex = hands.findIndex((hand) => hand.side === side);
+      if (duplicateIndex === -1) hands.push(trackedHand);
+      else if ((hands[duplicateIndex]?.confidence ?? 0) < trackedHand.confidence) {
+        hands[duplicateIndex] = trackedHand;
+      }
+    }
+
+    const left = hands.find((hand) => hand.side === 'left') ?? null;
+    const right = hands.find((hand) => hand.side === 'right') ?? null;
+    this.onFrame({ hands, left, right });
   }
 
   public stop(): void {
