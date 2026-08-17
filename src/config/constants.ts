@@ -32,9 +32,8 @@ export const GALAXY = {
   maxScale: 1.15,
 } as const;
 
-export const PLANETARY_SYSTEM = {
-  planetCount: 5,
+export const SOLAR_WORLD = {
   revealHalfLife: 0.24,
   zoomHalfLife: 0.13,
-  maximumZoom: 0.86,
+  maximumZoom: 0.9,
 } as const;

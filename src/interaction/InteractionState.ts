@@ -1,7 +1,7 @@
 import {
   HAND_LOST_TIMEOUT_MS,
   NEUTRAL_INTERACTION,
-  PLANETARY_SYSTEM,
+  SOLAR_WORLD,
 } from '../config/constants';
 import type { HandTrackingFrame } from '../hand/HandTracker';
 import { ExponentialSmoother } from '../hand/smoothing';
@@ -19,7 +19,7 @@ export interface InteractionSnapshot {
   readonly right: SmoothedHandState;
   readonly left: SmoothedHandState;
   readonly handCount: number;
-  readonly planetVisibility: number;
+  readonly solarPresence: number;
   readonly zoom: number;
 }
 
@@ -41,11 +41,11 @@ export class InteractionState {
   private readonly rightY = new ExponentialSmoother(NEUTRAL_INTERACTION.y, 0.2);
   private readonly rightZ = new ExponentialSmoother(NEUTRAL_INTERACTION.z, 0.24);
   private readonly leftOpenness = new ExponentialSmoother(NEUTRAL_INTERACTION.openness, 0.14);
-  private readonly leftPinch = new ExponentialSmoother(0, PLANETARY_SYSTEM.zoomHalfLife);
+  private readonly leftPinch = new ExponentialSmoother(0, SOLAR_WORLD.zoomHalfLife);
   private readonly leftX = new ExponentialSmoother(NEUTRAL_INTERACTION.x, 0.2);
   private readonly leftY = new ExponentialSmoother(NEUTRAL_INTERACTION.y, 0.22);
   private readonly leftZ = new ExponentialSmoother(NEUTRAL_INTERACTION.z, 0.24);
-  private readonly planetVisibility = new ExponentialSmoother(0, PLANETARY_SYSTEM.revealHalfLife);
+  private readonly solarPresence = new ExponentialSmoother(0, SOLAR_WORLD.revealHalfLife);
 
   public ingest(frame: HandTrackingFrame, timestampMs: number): void {
     if (frame.right) {
@@ -91,7 +91,7 @@ export class InteractionState {
     const smoothedPinch = this.leftPinch.update(
       leftDetected ? this.leftTargetPinch : 0,
       deltaSeconds,
-      leftDetected ? PLANETARY_SYSTEM.zoomHalfLife : 0.38,
+      leftDetected ? SOLAR_WORLD.zoomHalfLife : 0.38,
     );
 
     return {
@@ -112,8 +112,8 @@ export class InteractionState {
         z: this.leftZ.update(this.leftTargetZ, deltaSeconds, leftPositionHalfLife),
       },
       handCount: Number(rightDetected) + Number(leftDetected),
-      planetVisibility: this.planetVisibility.update(leftDetected ? 1 : 0, deltaSeconds),
-      zoom: smoothedPinch * PLANETARY_SYSTEM.maximumZoom,
+      solarPresence: this.solarPresence.update(leftDetected ? 1 : 0, deltaSeconds),
+      zoom: smoothedPinch * SOLAR_WORLD.maximumZoom,
     };
   }
 }

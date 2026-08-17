@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { GALAXY } from '../config/constants';
 import type { InteractionSnapshot } from '../interaction/InteractionState';
 import { generateDistantStars, generateGalaxy, getAdaptiveParticleCount } from './galaxyGenerator';
-import { PlanetarySystem } from './PlanetarySystem';
+import { SolarWorld } from './SolarWorld';
 
 const vertexShader = /* glsl */ `
   uniform float uTime;
@@ -94,8 +94,9 @@ export class Galaxy {
   private readonly distantStars: THREE.Points<THREE.BufferGeometry, THREE.PointsMaterial>;
   private readonly coreSprites: THREE.Sprite[] = [];
   private readonly glowTexture: THREE.CanvasTexture;
-  private readonly planetarySystem = new PlanetarySystem();
+  private readonly solarWorld = new SolarWorld();
   private readonly lookTarget = new THREE.Vector3();
+  private readonly solarFocusTarget = new THREE.Vector3();
   private frameId = 0;
   private previousTime = performance.now();
   private openness = 0.72;
@@ -154,8 +155,8 @@ export class Galaxy {
     this.particles = new THREE.Points(geometry, material);
     this.particles.frustumCulled = false;
     this.galaxyGroup.add(this.particles);
-    this.galaxyGroup.add(this.planetarySystem.group);
     this.scene.add(this.galaxyGroup);
+    this.scene.add(this.solarWorld.group);
 
     const ambientLight = new THREE.AmbientLight('#79b8d4', 0.5);
     const coreLight = new THREE.PointLight('#a8ecff', 32, 34, 1.7);
@@ -197,7 +198,7 @@ export class Galaxy {
     this.particles.material.dispose();
     this.distantStars.geometry.dispose();
     this.distantStars.material.dispose();
-    this.planetarySystem.dispose();
+    this.solarWorld.dispose();
     for (const sprite of this.coreSprites) sprite.material.dispose();
     this.glowTexture.dispose();
     this.renderer.dispose();
@@ -219,7 +220,15 @@ export class Galaxy {
     this.distantStars.rotation.y = elapsed * 0.0025;
     this.distantStars.rotation.x = Math.sin(elapsed * 0.035) * 0.018;
     if (interaction) {
-      this.planetarySystem.update(elapsed, interaction.planetVisibility, this.cameraZoom, deltaSeconds);
+      this.solarWorld.update(
+        elapsed,
+        interaction.solarPresence,
+        interaction.left.openness,
+        this.cameraZoom,
+        this.cameraFocusX,
+        this.cameraFocusY,
+        deltaSeconds,
+      );
     }
 
     const compression = 1 - this.openness;
@@ -247,14 +256,21 @@ export class Galaxy {
     this.cameraZoom = damp(this.cameraZoom, interaction.zoom, 6.8, deltaSeconds);
     this.cameraFocusX = damp(this.cameraFocusX, interaction.left.x, 4.2, deltaSeconds);
     this.cameraFocusY = damp(this.cameraFocusY, interaction.left.y, 4.2, deltaSeconds);
-    const focusStrength = this.cameraZoom * interaction.planetVisibility;
-    const focusX = (this.cameraFocusX - 0.5) * 5.2 * focusStrength;
-    const focusY = (0.5 - this.cameraFocusY) * 2.5 * focusStrength;
+    const solarOpen = THREE.MathUtils.smoothstep(interaction.left.openness, 0.12, 0.55);
+    const focusStrength = this.cameraZoom * interaction.solarPresence * solarOpen;
+    this.solarWorld.getFocusPosition(this.solarFocusTarget);
+    this.solarFocusTarget.x += (this.cameraFocusX - 0.5) * 1.5;
+    this.solarFocusTarget.y += (0.5 - this.cameraFocusY) * 1.1;
 
-    this.camera.position.x = damp(this.camera.position.x, focusX * 0.42, 4.6, deltaSeconds);
-    this.camera.position.y = damp(this.camera.position.y, 13.5 - this.cameraZoom * 3.7, 4.6, deltaSeconds);
-    this.camera.position.z = damp(this.camera.position.z, 27.5 - this.cameraZoom * 11.2, 4.6, deltaSeconds);
-    this.lookTarget.set(focusX, focusY, 0);
+    this.camera.position.x = damp(
+      this.camera.position.x,
+      this.solarFocusTarget.x * focusStrength * 0.42,
+      4.6,
+      deltaSeconds,
+    );
+    this.camera.position.y = damp(this.camera.position.y, 13.5 - focusStrength * 5.3, 4.6, deltaSeconds);
+    this.camera.position.z = damp(this.camera.position.z, 27.5 - focusStrength * 15.2, 4.6, deltaSeconds);
+    this.lookTarget.copy(this.solarFocusTarget).multiplyScalar(focusStrength);
     this.camera.lookAt(this.lookTarget);
   }
 

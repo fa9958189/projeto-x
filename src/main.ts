@@ -125,7 +125,7 @@ class ProjetoXApp {
       ? `FIELD ${Math.round(right.openness * 100).toString().padStart(2, '0')}%`
       : 'WAITING';
     this.leftRoleState.textContent = left.detected
-      ? `ZOOM ${Math.round(interaction.zoom * 100).toString().padStart(2, '0')}%`
+      ? `SOL ${Math.round(left.openness * 100).toString().padStart(2, '0')}% · Z ${Math.round(interaction.zoom * 100).toString().padStart(2, '0')}%`
       : 'WAITING';
 
     if (handCount > 0) {
@@ -138,20 +138,24 @@ class ProjetoXApp {
       this.gestureHint.classList.add('has-hand');
 
       if (right.detected && left.detected) {
-        this.gestureHintCopy.textContent = interaction.zoom > 0.55
-          ? 'Zoom cósmico ativo · mova a mão esquerda para explorar'
-          : 'Faça pinça com a esquerda para aproximar os mundos';
+        this.gestureHintCopy.textContent = left.openness < 0.18
+          ? 'Abra a mão esquerda para restaurar o sol'
+          : interaction.zoom > 0.55
+            ? 'Foco solar ativo · mova a mão esquerda para explorar'
+            : 'Feche a esquerda para encolher · faça pinça para aproximar o sol';
       } else if (right.detected) {
         this.gestureHintCopy.textContent = right.openness < 0.35
           ? 'Abra a mão direita para expandir'
-          : 'Feche a mão direita · levante a esquerda para revelar mundos';
+          : 'Feche a mão direita · levante a esquerda para revelar o sol';
       } else {
-        this.gestureHintCopy.textContent = 'Mundos revelados · levante a mão direita para controlar a galáxia';
+        this.gestureHintCopy.textContent = left.openness < 0.18
+          ? 'Sol recolhido · abra a mão esquerda para restaurar'
+          : 'Sol ativo · feche para recolher ou faça pinça para aproximar';
       }
     } else {
       this.statusCopy.textContent = 'SEARCHING';
       this.trackingStatus.dataset.state = 'searching';
-      this.gestureHintCopy.textContent = 'Mão direita: gravidade · mão esquerda: exploração';
+      this.gestureHintCopy.textContent = 'Mão direita: matéria · mão esquerda: sol e lente';
       this.gestureHint.classList.remove('has-hand');
     }
   }

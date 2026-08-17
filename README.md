@@ -4,7 +4,7 @@ Experimento de visão computacional e arte generativa que permite controlar uma 
 
 ## Sobre o projeto
 
-O Projeto X transforma as mãos em dois instrumentos complementares. A mão direita controla a força gravitacional da galáxia: aberta expande o campo estelar e fechada atrai cada estrela para o núcleo. A mão esquerda revela um sistema planetário e a distância entre o polegar e o indicador controla um zoom cinematográfico. Toda a experiência funciona no navegador, sem backend, banco de dados ou envio das imagens da câmera.
+O Projeto X transforma as mãos em dois instrumentos complementares. A mão direita controla a matéria da galáxia: aberta expande o campo estelar e fechada atrai cada estrela para o núcleo. A mão esquerda materializa um sol holográfico inspirado em interfaces de ficção científica. Abrir e fechar essa mão restaura, encolhe ou faz o astro desaparecer; a distância entre o polegar e o indicador controla um zoom cinematográfico focado exclusivamente nele. Toda a experiência funciona no navegador, sem backend, banco de dados ou envio das imagens da câmera.
 
 ## Tecnologias
 
@@ -46,7 +46,7 @@ src/
 │   └── constants.ts           # Modelo, performance e configuração de debug
 ├── galaxy/
 │   ├── Galaxy.ts              # Cena, render loop e deformação GPU
-│   ├── PlanetarySystem.ts     # Planetas, atmosferas e órbitas procedurais
+│   ├── SolarWorld.ts          # Sol holográfico, órbitas, raios e partículas
 │   └── galaxyGenerator.ts     # Geração procedural dos buffers imutáveis
 ├── hand/
 │   ├── HandTracker.ts         # Webcam e inferência MediaPipe
@@ -86,9 +86,11 @@ npm run preview
 
 - **Abrir/fechar a mão direita:** expande ou comprime a galáxia.
 - **Mover a mão direita:** altera sutilmente a rotação e a inclinação.
-- **Levantar a mão esquerda:** revela os planetas e suas órbitas.
-- **Fazer pinça com a mão esquerda:** aproxima a câmera progressivamente.
-- **Mover a mão esquerda durante a pinça:** desloca o foco da exploração.
+- **Levantar a mão esquerda aberta:** materializa o sol holográfico.
+- **Fechar a mão esquerda:** encolhe o sol progressivamente até fazê-lo desaparecer.
+- **Abrir novamente a mão esquerda:** restaura o sol e toda a sua energia.
+- **Fazer pinça com a mão esquerda:** aproxima a câmera progressivamente e foca apenas o sol.
+- **Mover a mão esquerda durante a pinça:** altera sutilmente o enquadramento solar.
 
 Para visualizar os landmarks, altere `DEBUG_HAND_TRACKING` para `true` em `src/config/constants.ts`.
 
@@ -97,7 +99,7 @@ Para visualizar os landmarks, altere `DEBUG_HAND_TRACKING` para `true` em `src/c
 - Calibração opcional por usuário e condições de iluminação.
 - MediaPipe em Web Worker com `OffscreenCanvas` quando o suporte for adequado.
 - Adaptação dinâmica de qualidade baseada no tempo de frame.
-- Seleção e aproximação cinematográfica de um planeta específico.
+- Novas camadas de plasma procedural e distorção térmica no sol.
 - Materiais e pós-processamento WebGL ainda mais sofisticados.
 
 ## Screenshots

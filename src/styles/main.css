@@ -512,7 +512,7 @@ button {
   display: grid;
   grid-template-columns: 24px 1fr;
   align-items: center;
-  min-width: 152px;
+  min-width: 184px;
   padding: 7px 9px;
   border: 1px solid rgba(120, 231, 255, 0.09);
   background: rgba(3, 8, 18, 0.32);

@@ -56,8 +56,8 @@ export class CameraPreview {
       ? `R ${Math.round(frame.right.openness * 100).toString().padStart(2, '0')}%`
       : 'R --%';
     this.leftReadout.textContent = frame.left
-      ? `L PINCH ${Math.round(frame.left.pinch * 100).toString().padStart(2, '0')}%`
-      : 'L PINCH --%';
+      ? `L ${Math.round(frame.left.openness * 100).toString().padStart(2, '0')} · Z ${Math.round(frame.left.pinch * 100).toString().padStart(2, '0')}`
+      : 'L -- · Z --';
 
     if (!DEBUG_HAND_TRACKING) return;
     if (detectedCount > 0) this.drawHands(frame.hands);
