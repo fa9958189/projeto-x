@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#020309" />
+    <meta
+      name="description"
+      content="Projeto X — uma galáxia procedural controlada em tempo real pelos movimentos da mão."
+    />
+    <title>Projeto X — Hand-Controlled Galaxy</title>
+  </head>
+  <body>
+    <div id="app">
+      <div id="galaxy-root" aria-hidden="true"></div>
+
+      <header class="hud hud--top" aria-label="Status da experiência">
+        <div class="brand-lockup">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <div>
+            <p class="eyebrow">EXPERIMENTO 01</p>
+            <p class="brand-name">PROJETO X</p>
+          </div>
+        </div>
+
+        <div class="tracking-status" id="tracking-status" data-state="idle">
+          <span class="status-dot" aria-hidden="true"></span>
+          <div>
+            <p class="eyebrow">HAND TRACKING</p>
+            <p class="status-copy" id="status-copy" aria-live="polite">STANDBY</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="hud hud--side" aria-hidden="true">
+        <span>01</span>
+        <span class="hud-line"></span>
+        <span>REALTIME<br />PARTICLE FIELD</span>
+      </div>
+
+      <section class="intro" id="intro" aria-labelledby="intro-title">
+        <div class="intro-orbit" aria-hidden="true">
+          <span></span>
+        </div>
+        <p class="intro-kicker">VISÃO COMPUTACIONAL × ARTE GENERATIVA</p>
+        <h1 id="intro-title">PROJETO <em>X</em></h1>
+        <p class="intro-lead">Controle o universo com suas mãos.</p>
+        <button class="activate-button" id="activate-camera" type="button">
+          <span>ATIVAR CÂMERA</span>
+          <span class="button-icon" aria-hidden="true">↗</span>
+        </button>
+        <p class="privacy-note">Processamento local · Nenhuma imagem é enviada</p>
+        <p class="intro-error" id="intro-error" role="alert"></p>
+      </section>
+
+      <aside class="camera-preview" id="camera-preview" aria-label="Visualização da webcam">
+        <div class="camera-header">
+          <span>CAM_01</span>
+          <span id="camera-state">OFFLINE</span>
+        </div>
+        <div class="camera-viewport">
+          <video id="camera-video" autoplay muted playsinline></video>
+          <canvas id="hand-overlay" aria-hidden="true"></canvas>
+          <div class="camera-scanline" aria-hidden="true"></div>
+          <div class="camera-empty" id="camera-empty">AGUARDANDO SINAL</div>
+        </div>
+        <div class="camera-footer">
+          <span id="hand-state">NO HAND</span>
+          <span class="openness-readout" id="openness-readout">OPENNESS — --%</span>
+        </div>
+      </aside>
+
+      <div class="gesture-hint" id="gesture-hint" aria-live="polite">
+        <span class="gesture-icon" aria-hidden="true"></span>
+        <span id="gesture-hint-copy">Mostre uma mão para a câmera</span>
+      </div>
+
+      <div class="grain" aria-hidden="true"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
