@@ -232,19 +232,21 @@ export class SolarWorld {
     this.beams.rotation.z = elapsedSeconds * 0.035;
     this.sparks.rotation.y = elapsedSeconds * 0.16;
     this.sparks.rotation.x = Math.sin(elapsedSeconds * 0.22) * 0.16;
-    this.coreMaterial.opacity = this.energy;
-    this.energyMaterial.opacity = this.energy * (0.54 + zoom * 0.22);
-    this.shellMaterial.opacity = this.energy * (0.34 + zoom * 0.24);
-    this.beamMaterial.opacity = this.energy * (0.48 + zoom * 0.42);
-    this.sparkMaterial.opacity = this.energy * (0.68 + zoom * 0.28);
-    this.sparkMaterial.size = 0.075 + zoom * 0.05;
-    this.light.intensity = this.energy * (13 + zoom * 20);
+    const closeUp = THREE.MathUtils.smoothstep(zoom, 0.22, 1);
+    this.coreMaterial.opacity = this.energy * (1 - closeUp * 0.38);
+    this.energyMaterial.opacity = this.energy * (0.54 + closeUp * 0.32);
+    this.shellMaterial.opacity = this.energy * (0.34 + closeUp * 0.36);
+    this.beamMaterial.opacity = this.energy * (0.48 + closeUp * 0.28);
+    this.sparkMaterial.opacity = this.energy * (0.68 + closeUp * 0.3);
+    this.sparkMaterial.size = 0.075 + closeUp * 0.035;
+    this.light.intensity = this.energy * (13 + closeUp * 8);
 
     for (let index = 0; index < this.glowMaterials.length; index += 1) {
       const material = this.glowMaterials[index];
       if (!material) continue;
       const baseOpacity = index === 0 ? 0.94 : index === 1 ? 0.55 : 0.22;
-      material.opacity = this.energy * baseOpacity * (1 + zoom * (0.25 - index * 0.05));
+      const closeUpReduction = index === 0 ? 0.18 : index === 1 ? 0.38 : 0.62;
+      material.opacity = this.energy * baseOpacity * (1 - closeUp * closeUpReduction);
     }
   }
 

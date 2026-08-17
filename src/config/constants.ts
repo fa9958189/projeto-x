@@ -35,5 +35,5 @@ export const GALAXY = {
 export const SOLAR_WORLD = {
   revealHalfLife: 0.24,
   zoomHalfLife: 0.13,
-  maximumZoom: 0.9,
+  maximumZoom: 1,
 } as const;

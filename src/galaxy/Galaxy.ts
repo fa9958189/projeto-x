@@ -264,13 +264,14 @@ export class Galaxy {
 
     this.camera.position.x = damp(
       this.camera.position.x,
-      this.solarFocusTarget.x * focusStrength * 0.42,
+      this.solarFocusTarget.x * focusStrength * 0.68,
       4.6,
       deltaSeconds,
     );
-    this.camera.position.y = damp(this.camera.position.y, 13.5 - focusStrength * 5.3, 4.6, deltaSeconds);
-    this.camera.position.z = damp(this.camera.position.z, 27.5 - focusStrength * 15.2, 4.6, deltaSeconds);
+    this.camera.position.y = damp(this.camera.position.y, 13.5 - focusStrength * 10, 4.6, deltaSeconds);
+    this.camera.position.z = damp(this.camera.position.z, 27.5 - focusStrength * 24, 4.6, deltaSeconds);
     this.lookTarget.copy(this.solarFocusTarget).multiplyScalar(focusStrength);
+    this.lookTarget.x += focusStrength * focusStrength * 1.2;
     this.camera.lookAt(this.lookTarget);
   }
 

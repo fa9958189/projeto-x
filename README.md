@@ -89,7 +89,7 @@ npm run preview
 - **Levantar a mão esquerda aberta:** materializa o sol holográfico.
 - **Fechar a mão esquerda:** encolhe o sol progressivamente até fazê-lo desaparecer.
 - **Abrir novamente a mão esquerda:** restaura o sol e toda a sua energia.
-- **Fazer pinça com a mão esquerda:** aproxima a câmera progressivamente e foca apenas o sol.
+- **Fazer pinça com a mão esquerda:** aproxima a câmera progressivamente até um close detalhado e foca apenas o sol.
 - **Mover a mão esquerda durante a pinça:** altera sutilmente o enquadramento solar.
 
 Para visualizar os landmarks, altere `DEBUG_HAND_TRACKING` para `true` em `src/config/constants.ts`.
