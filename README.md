@@ -1,6 +1,17 @@
+<div align="center">
+
 # Projeto X
 
-Experimento de visão computacional e arte generativa que permite controlar uma galáxia virtual através dos movimentos da mão.
+**Experiência interativa de visão computacional e arte generativa controlada por gestos.**
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-0b1220?style=for-the-badge&logo=typescript&logoColor=38bdf8)](https://www.typescriptlang.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-0b1220?style=for-the-badge&logo=threedotjs&logoColor=ffffff)](https://threejs.org/)
+[![MediaPipe](https://img.shields.io/badge/MediaPipe-0b1220?style=for-the-badge&logo=google&logoColor=a78bfa)](https://ai.google.dev/edge/mediapipe/solutions/guide)
+[![Demo](https://img.shields.io/badge/ABRIR_DEMO-0ea5e9?style=for-the-badge&logo=vercel&logoColor=ffffff)](https://projeto-x-lime.vercel.app)
+
+Transforme os movimentos das mãos em gravidade, expansão, rotação e exploração de uma galáxia renderizada em tempo real no navegador.
+
+</div>
 
 ## Sobre o projeto
 
@@ -102,13 +113,17 @@ Para visualizar os landmarks, altere `DEBUG_HAND_TRACKING` para `true` em `src/c
 - Novas camadas de plasma procedural e distorção térmica no sol.
 - Materiais e pós-processamento WebGL ainda mais sofisticados.
 
-## Screenshots
+## Prévia e guia de controles
 
-_Adicionar capturas da experiência após a publicação._
+<div align="center">
+  <img src="./public/guia-de-controles-projeto-x.png" alt="Guia visual dos controles por gestos do Projeto X" width="900" />
+</div>
 
 ## Demo
 
-_Adicionar a URL da versão publicada._
+**[Acessar a experiência publicada](https://projeto-x-lime.vercel.app)**
+
+Para iniciar, clique em **ATIVAR CÂMERA** e permita o acesso à webcam. O processamento dos gestos acontece localmente no navegador; nenhuma imagem é enviada ou armazenada.
 
 ## Privacidade
 
