@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./.github/social-preview.jpg" alt="Projeto X — galáxia interativa controlada por gestos" width="100%" />
+
 # Projeto X
 
 **Experiência interativa de visão computacional e arte generativa controlada por gestos.**
@@ -128,3 +130,13 @@ Para iniciar, clique em **ATIVAR CÂMERA** e permita o acesso à webcam. O proce
 ## Privacidade
 
 Os frames da webcam são processados localmente no navegador. O projeto não possui servidor e não armazena imagens ou dados biométricos.
+
+## Comunidade e contribuições
+
+Contribuições que melhorem acessibilidade, performance, rastreamento de gestos, shaders ou documentação são bem-vindas. Consulte o [guia de contribuição](./CONTRIBUTING.md) antes de começar.
+
+- [Propor uma melhoria ou relatar um problema](https://github.com/fa9958189/projeto-x/issues)
+- [Participar das discussões do projeto](https://github.com/fa9958189/projeto-x/discussions)
+- [Explorar a versão mais recente](https://github.com/fa9958189/projeto-x/releases/latest)
+
+Se o projeto foi útil ou despertou uma ideia, considere deixar uma estrela para acompanhar sua evolução.
