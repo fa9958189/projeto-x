@@ -1,0 +1,73 @@
+name: Relatar um bug
+description: Informe um problema reproduzível na experiência ou no ambiente de desenvolvimento.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por ajudar a melhorar o Projeto X. Não inclua segredos, dados pessoais ou imagens da webcam.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Descrição do problema
+      description: Explique de forma objetiva o que aconteceu.
+      placeholder: Ao ativar a câmera...
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      description: Liste os passos mínimos para que outra pessoa consiga observar o problema.
+      placeholder: |
+        1. Acesse a demonstração
+        2. Clique em ATIVAR CÂMERA
+        3. Faça o gesto...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento esperado
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Ambiente
+      description: Informe navegador e versão, sistema operacional, dispositivo e tipo de câmera quando relevante.
+      placeholder: Chrome 140, macOS, webcam integrada
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Área afetada
+      options:
+        - Permissão ou captura da câmera
+        - Rastreamento das mãos
+        - Controles por gestos
+        - Galáxia ou shaders
+        - Interface e responsividade
+        - Build ou ambiente local
+        - Documentação
+        - Outra
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacidade e conduta
+      options:
+        - label: Não incluí segredos, dados pessoais, dados biométricos ou imagens da webcam.
+          required: true
+        - label: Li e concordo em seguir o Código de Conduta do projeto.
+          required: true

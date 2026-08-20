@@ -10,6 +10,8 @@
 [![Three.js](https://img.shields.io/badge/Three.js-0b1220?style=for-the-badge&logo=threedotjs&logoColor=ffffff)](https://threejs.org/)
 [![MediaPipe](https://img.shields.io/badge/MediaPipe-0b1220?style=for-the-badge&logo=google&logoColor=a78bfa)](https://ai.google.dev/edge/mediapipe/solutions/guide)
 [![Demo](https://img.shields.io/badge/ABRIR_DEMO-0ea5e9?style=for-the-badge&logo=vercel&logoColor=ffffff)](https://projeto-x-lime.vercel.app)
+[![Release](https://img.shields.io/github/v/release/fa9958189/projeto-x?style=for-the-badge&color=7c3aed&label=release)](https://github.com/fa9958189/projeto-x/releases/latest)
+[![License](https://img.shields.io/github/license/fa9958189/projeto-x?style=for-the-badge&color=0891b2&label=license)](./LICENSE)
 
 Transforme os movimentos das mãos em gravidade, expansão, rotação e exploração de uma galáxia renderizada em tempo real no navegador.
 
@@ -138,5 +140,7 @@ Contribuições que melhorem acessibilidade, performance, rastreamento de gestos
 - [Propor uma melhoria ou relatar um problema](https://github.com/fa9958189/projeto-x/issues)
 - [Participar das discussões do projeto](https://github.com/fa9958189/projeto-x/discussions)
 - [Explorar a versão mais recente](https://github.com/fa9958189/projeto-x/releases/latest)
+- [Consultar a política de segurança](./SECURITY.md)
+- [Conhecer o código de conduta](./CODE_OF_CONDUCT.md)
 
 Se o projeto foi útil ou despertou uma ideia, considere deixar uma estrela para acompanhar sua evolução.

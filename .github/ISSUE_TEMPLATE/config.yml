@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Dúvidas e ideias abertas
+    url: https://github.com/fa9958189/projeto-x/discussions
+    about: Use as Discussions para perguntas, ideias iniciais e conversas com a comunidade.
+  - name: Relatar vulnerabilidade
+    url: https://github.com/fa9958189/projeto-x/security/advisories/new
+    about: Envie problemas de segurança de forma privada.
