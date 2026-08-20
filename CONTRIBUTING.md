@@ -7,6 +7,7 @@ Obrigado pelo interesse em melhorar o Projeto X. Contribuições técnicas, corr
 - Consulte as [issues abertas](https://github.com/fa9958189/projeto-x/issues) para evitar trabalho duplicado.
 - Use as [Discussions](https://github.com/fa9958189/projeto-x/discussions) para ideias ainda abertas, dúvidas e propostas que precisam de alinhamento.
 - Para mudanças maiores, descreva primeiro o problema, o comportamento esperado e a solução sugerida.
+- Respeite o [Código de Conduta](./CODE_OF_CONDUCT.md) em todas as interações do projeto.
 
 ## Contribuições bem-vindas
 
@@ -51,3 +52,5 @@ npm run build
 ## Privacidade
 
 O processamento da câmera deve permanecer local ao navegador. Qualquer proposta que envolva transmissão, gravação ou armazenamento de imagens exige discussão prévia e uma justificativa clara de privacidade e segurança.
+
+Vulnerabilidades não devem ser publicadas em issues. Siga as orientações do arquivo [SECURITY.md](./SECURITY.md) para enviar um relato privado.

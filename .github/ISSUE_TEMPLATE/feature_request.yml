@@ -1,0 +1,57 @@
+name: Propor uma melhoria
+description: Sugira uma funcionalidade ou evolução para o Projeto X.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use este formulário para propostas com objetivo claro. Para ideias ainda abertas, prefira as Discussions.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ou oportunidade
+      description: Que necessidade esta proposta resolve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Solução proposta
+      description: Descreva como a melhoria poderia funcionar para o usuário.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Informe outras abordagens avaliadas, se houver.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área principal
+      options:
+        - Acessibilidade
+        - Performance
+        - Rastreamento e gestos
+        - Arte generativa e shaders
+        - Interface e experiência
+        - Compatibilidade
+        - Documentação
+        - Outra
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Participação
+      options:
+        - label: Posso ajudar a implementar ou validar esta proposta.
+        - label: Li e concordo em seguir o Código de Conduta do projeto.
+          required: true
